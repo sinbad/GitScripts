@@ -53,7 +53,12 @@ if ($all) {
 # git lfs push in dry run mode will tell us the list of objects
 #$lfsPushOutput = git lfs push $gitallopt --dry-run origin master
 $lfspushargs = "lfs", "push", $gitallopt, "--dry-run", $remote, $refs
-$lfsPushOutput = Invoke-Expression "git $lfspushargs"
+# Invoke-Expression doesn't return errors
+$lfsPushOutput = git $lfspushargs
+if (!$?) {
+    Write-Output "ERROR: failed to call 'git $lfspushargs'"
+    Exit 5
+}
 
 # Result format is of the form
 # push f4ee401c063058a78842bb3ed98088e983c32aa447f346db54fa76f844a7e85e => Path/To/File
@@ -111,19 +116,11 @@ if ($verbose -or $dryrun) {
     Write-Output ("Run 'git $gitpushargs'")
 }
 if (-not $dryrun) {
-    $ErrorActionPreference = "Continue"
-    $pushOutput = Invoke-Expression "git $gitpushargs"
-
+    git $gitpushargs
     if (!$?) {        
-        Write-Output "ERROR: Push failed"
-
-        if (($pushOutput -contains "[rejected]") -and ($pushOutput -contains "[rejected]")) {
-            Write-Output "   You need to pull changes from remote branch first."
-        }
+        # git output is enough
         Exit 5
     }
-
-    $ErrorActionPreference = "Stop"
 }
 
 # Unlock these files
