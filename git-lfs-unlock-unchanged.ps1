@@ -27,20 +27,11 @@ if ($help) {
 }
 
 . $PSScriptRoot\inc\locking.ps1
+. $PSScriptRoot\inc\status.ps1
 
 Write-Output "Checking for locked but unchanged files..."
 
-# Get modified files
-$statusOutput = git status --porcelain --untracked-files=no
-
-$modifiedFiles = [System.Collections.ArrayList]@()
-foreach ($line in $statusOutput) {
-    # Match modified (any non-blank) in working copy or index or both
-    if ($line -match "^(?: [^\s]|[^\s] |[^\s][^\s])\s+(.+)$") {
-        $filename = $matches[1]
-        $modifiedFiles.Add($filename) > $null
-    }
-}
+$modifiedFiles = Get-Modified-Files 
 Write-Verbose ("Modified files:`n    " + ($modifiedFiles -join "`n    "))
 
 $lfsPushOutput = git lfs push --dry-run origin
