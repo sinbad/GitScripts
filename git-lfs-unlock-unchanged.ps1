@@ -26,6 +26,8 @@ if ($help) {
     Exit 0
 }
 
+. $PSScriptRoot\inc\locking.ps1
+
 Write-Output "Checking for locked but unchanged files..."
 
 # Get modified files
@@ -64,23 +66,14 @@ foreach ($line in $lfsPushOutput) {
 $filesToBePushed = @($filesToBePushed | Select-Object -Unique)
 Write-Verbose ("Files awaiting push: `n    " + ($filesToBePushed -join "`n    "))
 
-# git lfs locks --verify is needed to actually check which ones are ours
-$locksOutput = git lfs locks --verify
-if (!$?) {
-    Write-Output "ERROR: failed to call 'git lfs locks'"
-    Exit 5
-}
+$lockedFiles = Get-Locked-Files
+Write-Verbose ("Locked files: `n    " + ($lockedFiles -join "`n    "))
+
 $filesToUnlock = [System.Collections.ArrayList]@()
-foreach ($line in $locksOutput) {
-    if ($line -match "^O ([^\t]+)\t+(.+)\s+ID:(\d+).*$") {
-        $filename = $matches[1]
-        $owner = $matches[2]
-        $id = $matches[3]
-        Write-Verbose "Locked file: $filename"
-        if (-not ($modifiedFiles -contains $filename) -and -not ($filesToBePushed -contains $filename)) {
-            $filesToUnlock.Add($filename) > $null
-            Write-Verbose "  $filename isn't modified or awaiting push, will unlock"
-        }
+foreach ($filename in $lockedFiles) {
+    if (-not ($modifiedFiles -contains $filename) -and -not ($filesToBePushed -contains $filename)) {
+        $filesToUnlock.Add($filename) > $null
+        Write-Verbose "  $filename isn't modified or awaiting push, will unlock"
     }
 }
 

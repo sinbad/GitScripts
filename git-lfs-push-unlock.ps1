@@ -29,6 +29,8 @@ if ($help) {
     Exit 0
 }
 
+. $PSScriptRoot\inc\locking.ps1
+
 if (-not $remote) {
     Write-Output " "
     Write-Output "  ERROR: Missing parameter: remote"
@@ -81,24 +83,7 @@ if ($verbose -or $dryrun) {
 
 # Get the list of locked files so we don't try to unlock things we don't own
 # That's an error for git-lfs
-# Would be nice to use --local for speed, but this actually shows any files which
-# are read/write and lockable. It doesn't mean they're actually locked, and
-# getting it wrong makes the command fail. So we have to call the server
-# This will also report locks from other users, so we want the intersection
-# server should complain if we try to unlock someone else's lock
-$lfsLocksOutput = git lfs locks
-$lockedfiles = [System.Collections.ArrayList]@()
-# Output is of the form
-# Path/To/File\tsteve\tID:268
-foreach ($line in $lfsLocksOutput) {
-    # Need to use explicit tab to ensure support for whitespace in filenames
-    if ($line -match "^(.*)\t(.*)\s+ID:(\d+)$") {
-        $filename = $matches[1]
-        $name = $matches[2]
-        $id = $matches[3]
-        $lockedfiles.Add($filename) > $null
-    }
-}
+$lockedfiles = Get-Locked-Files
 if ($verbose -or $dryrun) {
     Write-Output ("Files currently locked: `n    " + ($lockedfiles -join "`n    "))
 }
