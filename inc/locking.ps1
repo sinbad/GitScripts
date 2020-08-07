@@ -25,6 +25,10 @@ function Get-All-Lockable-Files {
 # Get an array of the files currently locked by the current user
 function Get-Locked-Files {
     $lfsLocksOutput = git lfs locks --verify
+    if (!$?) {
+        Write-Output "ERROR: failed to call 'git lfs locks'"
+        Exit 5
+    }
     $lockedFiles = [System.Collections.ArrayList]@()
     # Output is of the form (for owned)
     # O Path/To/File\tsteve\tID:268
