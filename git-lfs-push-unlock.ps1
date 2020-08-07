@@ -30,6 +30,7 @@ if ($help) {
 }
 
 . $PSScriptRoot\inc\locking.ps1
+. $PSScriptRoot\inc\status.ps1
 
 if (-not $remote) {
     Write-Output " "
@@ -77,23 +78,22 @@ foreach ($line in $lfsPushOutput) {
 
 # Wrap in @() to avoid collapsing to a single string when only 1 file
 $filesbeingpushed = @($filesbeingpushed | Select-Object -Unique)
-if ($verbose -or $dryrun) {
-    Write-Output ("Files being pushed: `n    " + ($filesbeingpushed -join "`n    "))
-}
+Write-Verbose ("Files being pushed: `n    " + ($filesbeingpushed -join "`n    "))
 
 # Get the list of locked files so we don't try to unlock things we don't own
 # That's an error for git-lfs
 $lockedfiles = Get-Locked-Files
-if ($verbose -or $dryrun) {
-    Write-Output ("Files currently locked: `n    " + ($lockedfiles -join "`n    "))
-}
+Write-Verbose ("Files currently locked: `n    " + ($lockedfiles -join "`n    "))
 
-# Take the intersection of locked and pushed, that's unlock baby
+# get modified files, we don't unlock those
+$modifiedfiles = Get-Modified-Files
+Write-Verbose ("Files modified: `n    " + ($modifiedfiles -join "`n    "))
+
+# Take the intersection of locked and pushed
+# then difference of modified
 # Wrap in @() to avoid collapsing to a single string when only 1 file
-$filesToUnlock = @($lockedfiles | Where-Object {$filesbeingpushed -contains $_})
-if ($verbose -or $dryrun) {
-    Write-Output ("Files to unlock: `n    " + ($filesToUnlock -join "`n    "))
-}
+$filesToUnlock = @($lockedfiles | Where-Object {$filesbeingpushed -contains $_ -and -not ($modifiedfiles -contains $_)})
+Write-Verbose ("Files to unlock: `n    " + ($filesToUnlock -join "`n    "))
 
 # Push first
 $gitpushargs = "push", $gitallopt, $remote, $refs
@@ -122,10 +122,9 @@ while ($fileCount -gt 0) {
         $fileargs = ($filesToUnlock[$startFileIdx..($startFileIdx + $batchCount - 1)] -join " ")
     }
 
-    if ($verbose -or $dryrun) {
+    if ($dryrun) {
         Write-Output ("Run 'git lfs unlock $fileargs")
-    }
-    if (-not $dryrun) {
+    } else {
         Invoke-Expression "git lfs unlock $fileargs"
     }
 
