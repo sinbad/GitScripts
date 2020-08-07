@@ -14,8 +14,11 @@ function Print-Usage {
     Write-Output "Usage:"
     Write-Output "  git-lfs-push-and-unlock.ps1 [options] <remote> [<ref>...]"
     Write-Output " "
-    Write-Output "Options:"
+    Write-Output "Arguments:"
+    Write-Output "  <remote>     :  The remote to push to (required)"
+    Write-Output "  <ref>...     :  One or more refs to push (optional, current branch assumed)
     Write-Output " "
+    Write-Output "Options:"
     Write-Output "  -dryrun      : Don't perform actions, just report what would happen"
     Write-Output "  -verbose     : Print more"
     Write-Output "  -help        : Print this help"
