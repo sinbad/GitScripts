@@ -72,6 +72,8 @@ if ($filesToUnlock.Count -gt 0) {
     if ($dryrun) {
         Write-Output ("Would have unlocked:`n    " + ($filesToUnlock -join "`n    "))
     } else {
-        git lfs unlock $filesToUnlock
+        foreach ($filename in $filesToUnlock) {
+            git lfs unlock $filename
+        }
     }
 }
