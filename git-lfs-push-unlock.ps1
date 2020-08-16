@@ -16,7 +16,7 @@ function Print-Usage {
     Write-Output " "
     Write-Output "Arguments:"
     Write-Output "  <remote>     :  The remote to push to (required)"
-    Write-Output "  <ref>...     :  One or more refs to push (optional, current branch assumed)
+    Write-Output "  <ref>...     :  One or more refs to push (optional, current branch assumed)"
     Write-Output " "
     Write-Output "Options:"
     Write-Output "  -dryrun      : Don't perform actions, just report what would happen"
@@ -112,28 +112,14 @@ if (-not $dryrun) {
 }
 
 # Unlock these files
-$startFileIdx = 0
-$fileCount = $filesToUnlock.Count
-while ($fileCount -gt 0) {
-    $batchCount = $fileCount
-    $fileargs = ($filesToUnlock[$startFileIdx..($startFileIdx + $batchCount - 1)] -join " ")
-    
-    # Careful about command line length getting too long
-    while ($fileargs.Length -gt 2000) {
-        # Split args
-        $batchCount = $batchCount / 2
-        $fileargs = ($filesToUnlock[$startFileIdx..($startFileIdx + $batchCount - 1)] -join " ")
-    }
-
+if ($filesToUnlock.Count -gt 0) {
     if ($dryrun) {
-        Write-Output ("Run 'git lfs unlock $fileargs")
+        Write-Output ("Would have unlocked:`n    " + ($filesToUnlock -join "`n    "))
     } else {
-        Invoke-Expression "git lfs unlock $fileargs"
+        foreach ($filename in $filesToUnlock) {
+            git lfs unlock $filename
+        }
     }
-
-    $startFileIdx += $batchCount
-    $fileCount -= $batchCount
-
 }
 
 Write-Output "DONE: Push and unlock completed successfully"
