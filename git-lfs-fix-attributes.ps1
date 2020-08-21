@@ -46,7 +46,7 @@ foreach ($filename in $lockableLfsFiles) {
         if ($dryrun) {
             Write-Verbose "${filename}: read-only should be $shouldBeReadOnly"
         } else {
-            Write-Verbose "${filename}: setting read-only=$shouldBeReadOnly"
+            Write-Output "${filename}: setting read-only=$shouldBeReadOnly"
             Set-ItemProperty -Path $filename -Name IsReadOnly -Value $shouldBeReadOnly
         }
         ++$numFixed
