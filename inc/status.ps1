@@ -11,7 +11,7 @@ function Get-Modified-Files {
         # Match modified (any non-blank) in working copy or index or both
         if ($line -match "^(?: [^\s]|[^\s] |[^\s][^\s])\s+(.+)$") {
             $filename = $matches[1]
-            $modifiedFiles.Add($filename) > $null
+            $modifiedFiles.Add($filename.Trim()) > $null
         }
     }
 

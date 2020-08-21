@@ -49,7 +49,7 @@ foreach ($line in $lfsPushOutput) {
     if ($line -match "^push ([a-f0-9]+)\s+=>\s+(.+)$") {
         $oid = $matches[1]
         $filename = $matches[2]
-        $filesToBePushed.Add($filename) > $null
+        $filesToBePushed.Add($filename.Trim()) > $null
     }
 }
 

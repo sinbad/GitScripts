@@ -15,7 +15,7 @@ function Get-All-Lockable-Files {
     foreach ($line in $lockableAttrOut) {
         if ($line -match "^([^:]+):\slockable:\sset$") {
             $filename = $matches[1]
-            $lockableLfsFiles.Add($filename) > $null
+            $lockableLfsFiles.Add($filename.Trim()) > $null
         }
     }
 
@@ -37,7 +37,7 @@ function Get-Locked-Files {
             $filename = $matches[1]
             $owner = $matches[2]
             $id = $matches[3]
-            $lockedFiles.Add($filename) > $null
+            $lockedFiles.Add($filename.Trim()) > $null
         }
     }
     
