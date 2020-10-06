@@ -1,4 +1,26 @@
 # Get an array of all the lockable files in the repository
+function Check-IsLockable {
+    param(
+        [string]$filename
+    )
+    $out = git check-attr lockable $filename
+    return $out -match "^([^:]+):\slockable:\sset$"
+}
+
+function Lock-If-Required {
+    param(
+        [string]$filename
+    )
+
+    if (Get-ItemProperty -Path $filename | Select-Object -Expand IsReadOnly) {
+        if (Check-IsLockable $filename) {
+            git lfs lock $filename
+        } else {
+            throw "$filename is read-only but is not lockable"
+        }
+    }
+}
+
 function Get-All-Lockable-Files {
 
     # First get the list of LFS files in the repo (yes, all of them)
