@@ -15,6 +15,10 @@ function Lock-If-Required {
     if (Get-ItemProperty -Path $filename | Select-Object -Expand IsReadOnly) {
         if (Check-IsLockable $filename) {
             git lfs lock $filename
+            if (!$?) {
+                throw "Failed to lock $filename"
+            }
+
         } else {
             throw "$filename is read-only but is not lockable"
         }
