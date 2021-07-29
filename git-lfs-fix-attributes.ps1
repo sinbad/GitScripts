@@ -40,6 +40,11 @@ Write-Verbose ("Currently locked files:`n    " + ($lockedFiles -join "`n    "))
 
 $numFixed = 0
 foreach ($filename in $lockableLfsFiles) {
+    # Skip missing files; may have locked something then deleted it
+    if (-not (Test-Path $filename -PathType Leaf)) {
+        Write-Verbose "${filename}: skipping, missing locally"
+        continue
+    }
     $shouldBeReadOnly = -not ($lockedFiles -contains $filename)
     $isReadOnly = Get-ItemProperty -Path $filename | Select-Object -Expand IsReadOnly
     if ($isReadOnly -ne $shouldBeReadOnly) {
