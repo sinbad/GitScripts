@@ -59,7 +59,7 @@ function Get-Locked-Files {
     # Output is of the form (for owned)
     # O Path/To/File\tsteve\tID:268
     foreach ($line in $lfsLocksOutput) {
-        if ($line -match "^O ([^\t]+)\t+(.+)\s+ID:(\d+).*$") {
+        if ($line -match "^O ([^\t]+)\t+(.+)\s+ID:(\w+).*$") {
             $filename = $matches[1]
             $owner = $matches[2]
             $id = $matches[3]
