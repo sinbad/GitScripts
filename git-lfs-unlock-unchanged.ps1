@@ -34,7 +34,7 @@ Write-Output "Checking for locked but unchanged files..."
 $modifiedFiles = Get-Modified-Files 
 Write-Verbose ("Modified files:`n    " + ($modifiedFiles -join "`n    "))
 
-$lfsPushOutput = git lfs push --dry-run origin
+$lfsPushOutput = git lfs push --dry-run origin HEAD
 if (!$?) {
     Write-Output "ERROR: failed to call 'git lfs push --dry-run'"
     Exit 5
