@@ -1,10 +1,10 @@
-# Steve's Git (LFS+Locking) Helper Scripts
+# Joseph's Git (LFS+Locking) Helper Scripts
 
 This is a collection of Powershell scripts I use to help me manage a few tricky
 Git repo tasks, mostly those related to using [Git LFS](https://git-lfs.github.com/)
-and its [file locking feature](https://github.com/git-lfs/git-lfs/wiki/File-Locking). 
+and its [file locking feature](https://github.com/git-lfs/git-lfs/wiki/File-Locking).
 
-All these scripts work with the regular Powershell 5.1 shipped with Windows 10, 
+All these scripts work with the regular Powershell 5.1 shipped with Windows 10,
 but should also work fine with later versions.
 
 Wrapper .bat files are provided in case you want to call these from somewhere
@@ -28,10 +28,10 @@ Options:
   -help        : Print this help
 ```
 
-I added a feature to the [UE4 Git LFS Plugin](https://github.com/SRombauts/UE4GitPlugin) 
-which automatically unlocked files on push, this script is a version of that you 
+I added a feature to the [UE4 Git LFS Plugin](https://github.com/SRombauts/UE4GitPlugin)
+which automatically unlocked files on push, this script is a version of that you
 can run from anywhere. I find it useful when running a mixture of in-UE and
-out-of-UE workflow. 
+out-of-UE workflow.
 
 It figures out which lockable LFS files you're pushing, and unlocks them
 if the push was successful, so long as you don't have further uncommitted
@@ -41,7 +41,7 @@ modifications.
 
 If you suspect that you have some file locks you don't need, run this command
 and it will unlock anything you have locked, which you don't have outstanding
-changes for. 
+changes for.
 
 ```
 Usage:
@@ -61,7 +61,7 @@ remote yet.
 ## Fix file attributes
 
 Git LFS makes lockable files read-only on checkout or unlock to prevent
-accidental changes. Sometimes the attributes can get out of sync though, 
+accidental changes. Sometimes the attributes can get out of sync though,
 so this script checks them all and fixes where necessary.
 
 ```

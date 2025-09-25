@@ -67,3 +67,4 @@ if ($numFixed -gt 0) {
 } else {
     Write-Output "All file attributes are OK"
 }
+
