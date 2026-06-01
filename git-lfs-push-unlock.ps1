@@ -59,7 +59,7 @@ if ($all) {
 # git lfs push in dry run mode will tell us the list of objects
 #$lfsPushOutput = git lfs push $gitallopt --dry-run origin master
 $lfspushargs = "lfs", "push", $gitallopt, "--dry-run", $remote, $refs
-# Invoke-Expression doesn't return errors
+
 $lfsPushOutput = git $lfspushargs
 if (!$?) {
     Write-Output "ERROR: failed to call 'git $lfspushargs'"
